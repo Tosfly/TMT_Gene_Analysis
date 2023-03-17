@@ -1,1 +1,1 @@
-#HeaderAnalysis of gene product alteration for 10plex-TMT experiments.Two-ANOVA test
+#HeaderAnalysis of gene product alteration for 10plex-TMT experiments.Two-way ANOVA test
