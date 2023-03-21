@@ -182,7 +182,7 @@ def TMTRefor(rawdata):
     AllGeneNames = list(set([GN_single(x[61]) for x in rawdata if not x[61] == '']))
     Temp = [['GeneName','cKO1','cKO2','cKO3','cKO4','cKO5','WT1','WT2','WT3','WT4','WT5']]
     for i in AllGeneNames:
-        Temp += GeneExpress(i,rawdata)
+        Temp.append(GeneExpress(i,rawdata))
     return Temp
 
 ComCsv('CLR_AlixcKOvsWT',TMTRefor(TMT))
