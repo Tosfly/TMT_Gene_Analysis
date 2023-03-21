@@ -1,1 +1,1 @@
-#HeaderAnalysis of gene product alteration for 10plex-TMT experiments.Two-way ANOVA test
+#HeaderAnalysis of gene product alteration for 10plex-TMT experiments.##Remove ratio compression in TMT dataMake centered logratio transformation (CLR) in each MS1.Use TCA, box plots to evalue the results Ref Aitchison 1986.
