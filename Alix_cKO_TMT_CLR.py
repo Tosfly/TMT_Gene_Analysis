@@ -59,6 +59,17 @@ def ComCsv(filename,data):
             f_csv.writerow(i)
     return print('The data is generated as csv file')
 
+def CsvRead(filename):
+##for single colume data only
+    import csv
+    with open(filename, newline='') as f:
+        reader = csv.reader(f)
+        Temp = []
+        for row in reader:
+            Temp += row
+    return Temp
+            
+
 def Ex2Dat(filename,number):
     test = excel_reader(filename,number)
     temp = []
@@ -203,33 +214,36 @@ def TMTRefor(rawdata,genelist):
             Temp.append(Info)
     return Temp
 
-AllGeneNames = ValidGene(TMT)
+ValidAllGeneNames = ValidGene(TMT[2:])
+report('ValidAllGeneNames',ValidAllGeneNames)
+AllGeneNames = CsvRead('ValidAllGeneNames.csv')
 
-report('AllGeneNames',AllGeneNames)
+DataReform = TMTRefor(TMT,AllGeneNames)
+ComCsv('CLR_AlixcKOvsWT',DataReform)
 
-DataReform_1 = TMTRefor(TMT,AllGeneNames[:1000])
-ComCsv('CLR_AlixcKOvsW_1',DataReform_1)
+# DataReform_1 = TMTRefor(TMT,AllGeneNames[:1000])
+# ComCsv('CLR_AlixcKOvsWT_1',DataReform_1)
 
-DataReform_2 = TMTRefor(TMT,AllGeneNames[1000:2000])
-ComCsv('CLR_AlixcKOvsW_2',DataReform_2)
+# DataReform_2 = TMTRefor(TMT,AllGeneNames[1000:2000])
+# ComCsv('CLR_AlixcKOvsWT_2',DataReform_2)
 
-DataReform_3 = TMTRefor(TMT,AllGeneNames[2000:3000])
-ComCsv('CLR_AlixcKOvsW_3',DataReform_3)
+# DataReform_3 = TMTRefor(TMT,AllGeneNames[2000:3000])
+# ComCsv('CLR_AlixcKOvsWT_3',DataReform_3)
 
-DataReform_4 = TMTRefor(TMT,AllGeneNames[3000:4000])
-ComCsv('CLR_AlixcKOvsW_4',DataReform_4)
+# DataReform_4 = TMTRefor(TMT,AllGeneNames[3000:4000])
+# ComCsv('CLR_AlixcKOvsWT_4',DataReform_4)
 
-DataReform_5 = TMTRefor(TMT,AllGeneNames[4000:5000])
-ComCsv('CLR_AlixcKOvsW_5',DataReform_5)
+# DataReform_5 = TMTRefor(TMT,AllGeneNames[4000:5000])
+# ComCsv('CLR_AlixcKOvsWT_5',DataReform_5)
 
-DataReform_6 = TMTRefor(TMT,AllGeneNames[5000:6000])
-ComCsv('CLR_AlixcKOvsW_6',DataReform_6)
+# DataReform_6 = TMTRefor(TMT,AllGeneNames[5000:6000])
+# ComCsv('CLR_AlixcKOvsWT_6',DataReform_6)
 
-DataReform_7 = TMTRefor(TMT,AllGeneNames[6000:7000])
-ComCsv('CLR_AlixcKOvsW_7',DataReform_7)
+# DataReform_7 = TMTRefor(TMT,AllGeneNames[6000:7000])
+# ComCsv('CLR_AlixcKOvsWT_7',DataReform_7)
 
-DataReform_8 = TMTRefor(TMT,AllGeneNames[7000:])
-ComCsv('CLR_AlixcKOvsW_8',DataReform_8)
+# DataReform_8 = TMTRefor(TMT,AllGeneNames[7000:])
+# ComCsv('CLR_AlixcKOvsWT_8',DataReform_8)
         
             
 
