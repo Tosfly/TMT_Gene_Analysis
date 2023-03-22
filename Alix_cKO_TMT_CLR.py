@@ -6,13 +6,13 @@ Created on Thu Dec 29 16:03:13 2022
 @author: yi-zhiwang
 """
 import os
-os.chdir("/Users/yi-zhiwang/Projects/cLTP/Raw_Data/Alix_cKO")
+os.chdir("/home/ywd617/data_analysis")
 import numpy
 import math
 import pandas as pd
 import seaborn as sns
 import statistics
-from numba import jit, cuda
+#from numba import jit, cuda
 #######################################################################################################################################################################
 ## Input/Output codes
 def excel_reader(file_name,sheet_Num):
@@ -188,21 +188,40 @@ def CheckReverCon(genename,rawdata):
     else:
         return 1
 
-@jit(target_backend='cuda')
+#@jit(target_backend='cuda')
+
+AllGeneNames = list(set([GN_single(x[61]) for x in TMT if not x[61] == '']))
                 
-def TMTRefor(rawdata):
-    AllGeneNames = list(set([GN_single(x[61]) for x in rawdata if not x[61] == '']))
+def TMTRefor(rawdata,genelist):
     Temp = [['GeneName','cKO1','cKO2','cKO3','cKO4','cKO5','WT1','WT2','WT3','WT4','WT5']]
-    for i in AllGeneNames:    
+    for i in genelist:    
         if CheckReverCon(i,rawdata) == 1:
             Temp.append(GeneExpress(i,rawdata))
     return Temp
 
+DataReform_1 = TMTRefor(TMT,AllGeneNames[:1000])
+ComCsv('CLR_AlixcKOvsW_1',DataReform_1)
 
+DataReform_2 = TMTRefor(TMT,AllGeneNames[1000:2000])
+ComCsv('CLR_AlixcKOvsW_2',DataReform_2)
 
-DataReform = TMTRefor(TMT)
+DataReform_3 = TMTRefor(TMT,AllGeneNames[2000:3000])
+ComCsv('CLR_AlixcKOvsW_3',DataReform_3)
 
-ComCsv('CLR_AlixcKOvsWT',DataReform)
+DataReform_4 = TMTRefor(TMT,AllGeneNames[3000:4000])
+ComCsv('CLR_AlixcKOvsW_4',DataReform_4)
+
+DataReform_5 = TMTRefor(TMT,AllGeneNames[4000:5000])
+ComCsv('CLR_AlixcKOvsW_5',DataReform_5)
+
+DataReform_6 = TMTRefor(TMT,AllGeneNames[5000:6000])
+ComCsv('CLR_AlixcKOvsW_6',DataReform_6)
+
+DataReform_7 = TMTRefor(TMT,AllGeneNames[6000:7000])
+ComCsv('CLR_AlixcKOvsW_7',DataReform_7)
+
+DataReform_8 = TMTRefor(TMT,AllGeneNames[7000:])
+ComCsv('CLR_AlixcKOvsW_8',DataReform_8)
         
             
 
