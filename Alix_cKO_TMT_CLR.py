@@ -12,6 +12,7 @@ import math
 import pandas as pd
 import seaborn as sns
 import statistics
+from numba import jit, cuda
 #######################################################################################################################################################################
 ## Input/Output codes
 def excel_reader(file_name,sheet_Num):
@@ -177,15 +178,31 @@ def GeneExpress(genename,rawdata):
     WT4 = sum([x[9] for x in GeneData])
     WT5 = sum([x[10] for x in GeneData])
     return [genename,cKO1,cKO2,cKO3,cKO4,cKO5,WT1,WT2,WT3,WT4,WT5]
-        
+
+def CheckReverCon(genename,rawdata):
+    IDs_raw = [x[1] for x in rawdata]
+    IDs_Com = [x for x in IDs_raw if not 'Reverse' in x]
+    IDs = [x for x in IDs_Com if not 'contaminant' in x]
+    if IDs == []:
+        return 0
+    else:
+        return 1
+
+@jit(target_backend='cuda')
+                
 def TMTRefor(rawdata):
     AllGeneNames = list(set([GN_single(x[61]) for x in rawdata if not x[61] == '']))
     Temp = [['GeneName','cKO1','cKO2','cKO3','cKO4','cKO5','WT1','WT2','WT3','WT4','WT5']]
-    for i in AllGeneNames:
-        Temp.append(GeneExpress(i,rawdata))
+    for i in AllGeneNames:    
+        if CheckReverCon(i,rawdata) == 1:
+            Temp.append(GeneExpress(i,rawdata))
     return Temp
 
-ComCsv('CLR_AlixcKOvsWT',TMTRefor(TMT))
+
+
+DataReform = TMTRefor(TMT)
+
+ComCsv('CLR_AlixcKOvsWT',DataReform)
         
             
 
