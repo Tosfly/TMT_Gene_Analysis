@@ -6,7 +6,7 @@ Created on Thu Dec 29 16:03:13 2022
 @author: yi-zhiwang
 """
 import os
-os.chdir("/home/ywd617/data_analysis")
+os.chdir("/Users/yi-zhiwang/Projects/cLTP/Raw_Data/Alix_cKO")
 import numpy
 import math
 import pandas as pd
@@ -42,8 +42,9 @@ def GN_single(name):
         return name.split(' OS=')[0]
 
 
-def report(data,name):
+def report(name,data):
 ##name = 'name.txt'
+    name = name + '.csv'
     new = open(name,'w')
     for i in data:
         new.write(str(i)+'\n')
@@ -144,14 +145,21 @@ def Close(Rowdata):
 ##Close the data
     ReporterIon = Rowdata[1:11]
     Total = sum(ReporterIon)
-    return [Rowdata[0]] + [x/Total for x in ReporterIon] + Rowdata[11:]
+    if Total != 0:
+        return [Rowdata[0]] + [x/Total for x in ReporterIon] + Rowdata[11:]
+    else:
+        return 'NA'
 
 def CLRrow(Rowdata):
 ##CLR on rowdata
-    ReporterIon = Rowdata[1:11]
-    GeoMean = sum([math.log2(x) for x in ReporterIon])/10
-    return [Rowdata[0]] + [(math.log10(x) - GeoMean) for x in ReporterIon] + Rowdata[11:]
-
+    CloseData = Close(Rowdata)
+    if CloseData != 'NA':
+        ReporterIon = CloseData[1:11]
+        GeoMean = sum([math.log2(x) for x in ReporterIon])/10
+        return [Rowdata[0]] + [(math.log2(x) - GeoMean) for x in ReporterIon] + Rowdata[11:]
+    else:
+        return 'NA'
+        
 def PeptideCleanUp(genename,rawdata):
 ## remove multiple counted peptide by ScanNum
     Allpeptides_raw = GeneFinder(genename,rawdata)
@@ -162,8 +170,7 @@ def PeptideCleanUp(genename,rawdata):
         Peptide = [x for x in Allpeptides if x[11] == i][0]
         Temp.append(Peptide)
     NoZero = [ReplaceZero(x) for x in Temp]
-    DataClose = [Close(x) for x in NoZero]
-    return [Allpeptides[0]] + [CLRrow(x) for x in DataClose]
+    return [Allpeptides[0]] + [CLRrow(x) for x in NoZero]
 
 def GeneExpress(genename,rawdata):
     GeneData = PeptideCleanUp(genename,rawdata)[1:]
@@ -179,25 +186,26 @@ def GeneExpress(genename,rawdata):
     WT5 = sum([x[10] for x in GeneData])
     return [genename,cKO1,cKO2,cKO3,cKO4,cKO5,WT1,WT2,WT3,WT4,WT5]
 
-def CheckReverCon(genename,rawdata):
-    IDs_raw = [x[1] for x in rawdata]
-    IDs_Com = [x for x in IDs_raw if not 'Reverse' in x]
-    IDs = [x for x in IDs_Com if not 'contaminant' in x]
-    if IDs == []:
-        return 0
-    else:
-        return 1
-
 #@jit(target_backend='cuda')
 
-AllGeneNames = list(set([GN_single(x[61]) for x in TMT if not x[61] == '']))
+def ValidGene(dataset):
+    AllGeneNames = list(set([GN_single(x[61]) for x in dataset if not x[61] == '']))
+    AllIDs_ori = [x[1] for x in dataset if GN_single(x[61]) in AllGeneNames]
+    AllIDs_com = [x for x in AllIDs_ori if not 'Reverse_' in x]
+    AllIDs = [x for x in AllIDs_com if not 'contaminant_' in x]
+    return list(set([GN_single(x[61]) for x in dataset if x[1] in AllIDs]))
                 
 def TMTRefor(rawdata,genelist):
     Temp = [['GeneName','cKO1','cKO2','cKO3','cKO4','cKO5','WT1','WT2','WT3','WT4','WT5']]
     for i in genelist:    
-        if CheckReverCon(i,rawdata) == 1:
-            Temp.append(GeneExpress(i,rawdata))
+        Info = GeneExpress(i, rawdata)
+        if sum(Info[1:]) != 0:
+            Temp.append(Info)
     return Temp
+
+AllGeneNames = ValidGene(TMT)
+
+report('AllGeneNames',AllGeneNames)
 
 DataReform_1 = TMTRefor(TMT,AllGeneNames[:1000])
 ComCsv('CLR_AlixcKOvsW_1',DataReform_1)
